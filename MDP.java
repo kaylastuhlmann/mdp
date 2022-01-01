@@ -96,15 +96,21 @@ public class MDP {
     // Iteration count for value iteraiton
     public static int valueIteration() {
 
+        System.out.println("entering value interation function");
+
         int counter = 0;
 
         // Use this help with the iteration
         double delta = Double.POSITIVE_INFINITY;
 
+        System.out.println("before while loop");
+
         // Iteration loop (keeping track of the number of iterations)
         while (delta > Math.abs(maxStateUtilityError * (1 - discountFactor) / discountFactor)) {
 
+            System.out.println(delta + "this is before delta update");
             delta = vbackup();
+            System.out.println(delta + "this is after delta update");
             counter++;
 
         }
@@ -178,12 +184,12 @@ public class MDP {
         for (int s = 0; s < NUM_STATES ; ++s) {
 
             // Iterate through and calculate the optimal policy
-            int policy = ActionfromUtilities(s);
+            int currPolicy = ActionfromUtilities(s);
 
             // With the best action, calculate the utility
-            double getPolicy = calculatePolicy(s, policy, discountFactor);
+            int getPolicy = calculatePolicy(s, currPolicy, discountFactor);
 
-            if (policy[s] != getPolicy) {
+            if (getPolicy != policy[s]) {
 
                 // Reset delta
                 randomState = randomNumber.nextInt(NUM_STATES) + 1;
@@ -193,7 +199,7 @@ public class MDP {
             utility[s] = getPolicy;
         
         }
-        return random;
+        return randomState;
 
     }
 
@@ -1434,7 +1440,7 @@ public class MDP {
         stepCost = Double.parseDouble(args[5]);
 
         // String input
-        String solutionTechnique = args[6];
+        solutionTechnique = String.parseString(args[6]);
 
         // Initalize the MDP
         initializeMDP(T, R);
@@ -1446,7 +1452,8 @@ public class MDP {
             long startTime = System.nanoTime();
 
             // Call the function that is running value iteration with its helper functions
-            iteration(solutionTechnique);
+            System.out.println("before interation");
+            valueIteration();
 
             // End the time after the iteration is finished
             long endTime = System.nanoTime();
@@ -1483,7 +1490,7 @@ public class MDP {
             long startTime = System.nanoTime();
 
             // Call the function that is running value iteration with its helper functions
-            iteration();
+            policyIteration();
 
             // End the time after the iteration is finished
             long endTime = System.nanoTime();
