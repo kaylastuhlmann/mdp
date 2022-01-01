@@ -96,20 +96,20 @@ public class MDP {
     // Iteration count for value iteraiton
     public static int valueIteration() {
 
-            int counter = 0;
+        int counter = 0;
 
-            // Use this help with the iteration
-            double delta = Double.POSITIVE_INFINITY;
+        // Use this help with the iteration
+        double delta = Double.POSITIVE_INFINITY;
 
-            // Iteration loop (keeping track of the number of iterations)
-            while (delta > Math.abs(maxStateUtilityError * (1 - discountFactor) / discountFactor)) {
+        // Iteration loop (keeping track of the number of iterations)
+        while (delta > Math.abs(maxStateUtilityError * (1 - discountFactor) / discountFactor)) {
 
-                delta = vbackup();
-                counter++;
+            delta = vbackup();
+            counter++;
 
-            }
-            return counter;
         }
+        return counter;
+    }
 
     // Get the best action by calculating the action with the highest value 
     public static int ActionfromUtilities(int s) {
@@ -152,7 +152,7 @@ public class MDP {
             double prob = T[s][action][j];
 
             // Implement the Bellman update formula to calculate the utility
-            val += (discountFactor * (prob * utility[j]));;
+            val += discountFactor * (prob * utility[j]);
         }
 
         // Implement the step cost when retrieving the rewards
@@ -169,7 +169,10 @@ public class MDP {
     public static double pbackup () {
 
         // Start off with a random policy 
-        int random = (int)(Math.random() * 5) + 0;
+        int randomState = randomNumber.nextInt(NUM_STATES) + 1;
+
+        // // Calculate utility
+        // double utility = PolicyfromUtilities(randomState);
 
         // For all the states in the grid 
         for (int s = 0; s < NUM_STATES ; ++s) {
@@ -183,7 +186,7 @@ public class MDP {
             if (policy[s] != getPolicy) {
 
                 // Reset delta
-                random = (int)(Math.random() * 5) + 0;
+                randomState = randomNumber.nextInt(NUM_STATES) + 1;
             }
 
             // Update our utilities
@@ -260,9 +263,8 @@ public class MDP {
             // Get the expected probability
             double prob = T[s][action][j];
 
-            // Implement the Bellman update formula and the current policy and solve using linear equations
-            // Implement the TestMat and create a matrix and utilzie the solve method
-
+            // Implement the Bellman update formula for each state
+            val += (discountFactor * (prob * utility[j]));
         }
 
         // Implement the step cost when retrieving the rewards
