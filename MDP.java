@@ -167,7 +167,11 @@ public class MDP {
 
         }
 
-
+/*
+    public static double utilityOfAction() {
+        // given action, calculate utility of that action
+    }
+*/
 
     /* POLICY ITERATION */
 
@@ -194,15 +198,16 @@ public class MDP {
             int[] newPolicy = new int[NUM_STATES];
             // for each state, calculate expected utility using Bellman equation and possible actions
             for (int i = 0; i < NUM_STATES; i++) {
-                int oldAction = policy[i];
-                int newAction = oldAction;
-                int highestUtility = 0;
-                for (int j = 0; j < 4; j++) { // for each possible action
-                    double newUtility = calculateUtility(i, j, discountFactor);
-                    if (newUtility > highestUtility) {
-                        newAction = j;
-                    }
-                }
+                //int oldAction = policy[i];
+                int newAction = ActionfromUtilities(i);
+                
+                //int highestUtility = -999999999;
+                //for (int j = 0; j < 4; j++) { // for each possible action
+                //    double newUtility = calculateUtility(i, j, discountFactor);
+                //    if (newUtility > highestUtility) {
+                //        newAction = j;
+                //    }
+                //}
                 newPolicy[i] = newAction;
             }
             // if it stops improving, stop policy iteration
@@ -211,6 +216,7 @@ public class MDP {
             } 
             policy = newPolicy;
         }
+        
         return iterationCount;
     }
 
@@ -258,15 +264,15 @@ public class MDP {
         Matrix U = C.solve(R);     
         // assume utility vector is first element of array
         
-        utility = U.getArray()[1];  
-        /*
-         * QUESTION FOR PROFESSOR MAJERCIK
-         * 
-         * U is in form of {{U(s0)}{U(s1)}{U(s2)}...}
-         * we want utility in form of {U(s0), U(s1), U(s2), ...}
-         * which is why we get sytax error during policy improvement phase of PolicyEvaluation
-         * 
-         */
+
+        
+        double[] newUtility = new double[NUM_STATES];
+        double[][] values = U.getArray();
+        for(int i = 0; i < NUM_STATES; i++) {
+            double utilityValue = values[i][0];
+            newUtility[i] = utilityValue;
+        }
+        utility = newUtility;
 
         return utility;
 
@@ -1477,13 +1483,19 @@ public class MDP {
         
         // java MDP 0.99 1e-6 0.5 1 -1 -0.04 v
         // Numerical input
-        // discountFactor = Double.parseDouble(args[0]);
-        // maxStateUtilityError = Double.parseDouble(args[1]);
-        // keyLossProbability = Double.parseDouble(args[2]);
-        // positiveTerminalReward = Double.parseDouble(args[3]);
-        // negativeTerminalReward = Double.parseDouble(args[4]);
-        // stepCost = Double.parseDouble(args[5]);
+        discountFactor = Double.parseDouble(args[0]);
+        //System.out.print(args);
 
+        maxStateUtilityError = Double.parseDouble(args[1]);
+        keyLossProbability = Double.parseDouble(args[2]);
+        positiveTerminalReward = Double.parseDouble(args[3]);
+        negativeTerminalReward = Double.parseDouble(args[4]);
+        stepCost = Double.parseDouble(args[5]);
+
+        // String input
+        solutionTechnique = args[6];
+        
+        /*
         discountFactor = 0.99;
         maxStateUtilityError = 1e-6;
         keyLossProbability = 0.5;
@@ -1491,24 +1503,24 @@ public class MDP {
         negativeTerminalReward = -1;
         stepCost = -0.04;
 
-        // String input
         solutionTechnique = "p";
+        */
 
         // Initalize the MDP
         initializeMDP(T, R);
 
         // Check which solution technique they use
-        if (solutionTechnique == "v") {
-        // if (args[6].charAt(0) == 'v') {
+        //if (solutionTechnique == "v") {
+        if (args[6].charAt(0) == 'v') {
 
             // Starting the timer for value iteration
-            long startTime = System.nanoTime();
+            long startTime = System.currentTimeMillis();
 
             // Call the function that is running value iteration with its helper functions
             int iterations = valueIteration();
 
             // End the time after the iteration is finished
-            long endTime = System.nanoTime();
+            long endTime = System.currentTimeMillis();
 
             // Change the variable to use for output
             solutionTechnique = "Value Iteration";
@@ -1530,22 +1542,22 @@ public class MDP {
 
             System.out.println("The number of iterations in that run: " + String.valueOf(iterations));
 
-            System.out.println("The time taken to run this solution technique: " + ((endTime - startTime) / 100000) + " milliseconds");
+            System.out.println("The time taken to run this solution technique: " + (endTime - startTime) + " milliseconds");
 
             // Print out the utility and policy
             printUtilitiesAndPolicy(utility, policy);
 
         }
-        else if (solutionTechnique == "p") {
+        else if (args[6].charAt(0) == 'p') {
 
             // Starting the timer for value iteration
-            long startTime = System.nanoTime();
+            long startTime = System.currentTimeMillis();
 
             // Call the function that is running value iteration with its helper functions
             int numIterations = policyIteration();
 
             // End the time after the iteration is finished
-            long endTime = System.nanoTime();
+            long endTime = System.currentTimeMillis();
 
             // Change the variable to use for output
             // solutionTechnique = "Policy Iteration";
@@ -1567,7 +1579,7 @@ public class MDP {
 
             System.out.println("The number of iterations in that run: " + String.valueOf(numIterations));
 
-            System.out.println("The time taken to run this solution technique: " + ((endTime - startTime) / 100000) + " milliseconds");
+            System.out.println("The time taken to run this solution technique: " + (endTime - startTime) + " milliseconds");
 
             // Print out the utility and policy
             printUtilitiesAndPolicy(utility, policy);
