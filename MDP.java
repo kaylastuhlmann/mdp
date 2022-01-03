@@ -1,8 +1,9 @@
 /*
-
-  Framework for MDP Solver
-  Stephen Majercik
-
+ * Lisa Mekonnen and Kayla Stuhlmann
+ * Markov Decision Processes Final Project
+ * 
+ * CSCI 3420: Optimization and Uncertainty
+ * Professor Stephen Majercik 
  */
 
 
