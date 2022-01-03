@@ -171,93 +171,34 @@ public class MDP {
 
     /* POLICY ITERATION */
 
-    // Backup for policy iteration
-    // public static int pbackup () {
-
-    //     // Start off with a random policy 
-    //     Random rand = new Random();
-    //     int randomState = rand.nextInt(NUM_STATES) + 1;
-
-    //     // For all the states in the grid 
-    //     for (int s = 0; s < NUM_STATES ; ++s) {
-
-    //         // Iterate through and calculate the optimal policy
-    //         int currPolicy = PolicyfromUtilities(s);
-
-    //         // With the best action, calculate the utility
-    //         int getPolicy = (int) calculatePolicy(s, currPolicy, discountFactor);
-
-    //         if (getPolicy != policy[s]) {
-
-    //             // Reset delta
-    //             randomState = rand.nextInt(NUM_STATES + 1);
-    //         }
-
-    //         // Update our utilities
-    //         utility[s] = getPolicy;
-        
-    //     }
-    //     return randomState;
-
-
-    }
-    /*
-
-    // Iteration count for policy iteration
-    // public static int policyIteration() {
-
-    //     // Counter
-    //     int counter = 0;
-
-    //     // Start off with a random policy 
-    //     Random rand = new Random();
-    //     int randomState = rand.nextInt(NUM_STATES) + 1;
-
-    //     // Utilize the previous method defined above to get the best policy from utilities
-    //     // Policy implies a utility function (slide 6)
-    //     int bestAction = PolicyfromUtilities(randomState );
-
-    //     // With the best action, calculate the policy
-    //     int getPolicy = calculatePolicy(randomState, bestAction);
-
-    //     // Iteration loop (keeping track of the number of iterations)
-    //     while (policy[randomState] != getPolicy) {
-
-    //         randomState = pbackup();
-    //         counter++;
-
-        }
-        return counter;
-    }
-*/
-    // policy iter should return policy, so a int[] where size = NUM_STATES
     public static int policyIteration() {
-    //kayla attempt:
-        int interationCount = 0; // use to keep track of how many iterations it takes to get best Policy
+    // returns the number of iterations policyEvaluation does before reaching optimal policy
+        int iterationCount = 0; // use to keep track of how many iterations it takes to get best Policy
 
-        boolean improving = True; 
+        boolean improving = true; 
         // Initialize a random Policy array
-        for(i = 0; i < NUM_STATES; i++){
-            int randomNum = (int)(Math.random(3)); // 0-3 represent the different actions
+        Random rand = new Random();
+        for(int i = 0; i < NUM_STATES; i++){
+            int randomNum = rand.nextInt(3); // 0-3 represent the different actions
             policy[i] = randomNum;
         }
 
         while(improving) { // stop when policy is no longer improving
             iterationCount += 1;
             /* Policy Evaluation */
-            utility = policyEval(policy, utility)  // maybe we dont need to pass these in since it is w/in the class?
+            utility = policyEvaluation(policy, utility);  // maybe we dont need to pass these in since it is w/in the class?
 
             
             /* Policy Improvement */
             // the utility fxn implies a policy
-            int[] newPolicy = [NUM_STATES];
+            int[] newPolicy = new int[NUM_STATES];
             // for each state, calculate expected utility using Bellman equation and possible actions
             for (int i = 0; i < NUM_STATES; i++) {
                 int oldAction = policy[i];
-                int newAction;
+                int newAction = oldAction;
                 int highestUtility = 0;
                 for (int j = 0; j < 4; j++) { // for each possible action
-                    double newUtility = calculateUtilities(i, j, discountFactor);
+                    double newUtility = calculateUtility(i, j, discountFactor);
                     if (newUtility > highestUtility) {
                         newAction = j;
                     }
@@ -266,7 +207,7 @@ public class MDP {
             }
             // if it stops improving, stop policy iteration
             if (Arrays.equals(policy, newPolicy)) {
-                improving = False;
+                improving = false;
             } 
             policy = newPolicy;
         }
@@ -279,7 +220,7 @@ public class MDP {
     public static double[] policyEvaluation(int[] policy, double[] utility) {
 
         /* make coefficient matrix */
-        double[NUM_STATES][NUM_STATES] coefficients;
+        double[][] coefficients = new double[NUM_STATES][NUM_STATES];
         // initialize coefficients
         for (int i = 0; i < NUM_STATES; i++) {
             for(int j = 0; j < NUM_STATES; j++) {
@@ -297,7 +238,7 @@ public class MDP {
             // for each possible end state
             for(int j = 0; j < end_states.length; j++) {
                 // find the amount of change --> -(probability*discountFactor)
-                double changeAmount = -(discountFactor * (T[i][current_utility][j]));
+                double changeAmount = -(discountFactor * (T[i][currentAction][j]));
                 // update coefficients array at that spot by the change amount
                 double oldCoeff = coefficients[i][j];
                 coefficients[i][j] = oldCoeff + changeAmount;
@@ -307,8 +248,8 @@ public class MDP {
         Matrix C = new Matrix(coefficients); 
 
         /* make reward matrix */
-        double[NUM_STATES][1] reward2D; // make existing 1-D reward array into 2-D array, with NUM-STATES rows
-        for (int i < 0; i < NUM_STATES; i++) {
+        double[][] reward2D = new double[NUM_STATES][1]; // make existing 1-D reward array into 2-D array, with NUM-STATES rows
+        for (int i = 0; i < NUM_STATES; i++) {
             reward2D[i][0] = R[i];  // copy over values, each row should have a column containing one item
         }
         Matrix R = new Matrix(reward2D);
@@ -316,8 +257,17 @@ public class MDP {
         // solve for utility matrix if: [coeff. for each utility][utility]=[rewards]
         Matrix U = C.solve(R);     
         // assume utility vector is first element of array
-        utility = U.A[1];  
         
+        utility = U.getArray()[1];  
+        /*
+         * QUESTION FOR PROFESSOR MAJERCIK
+         * 
+         * U is in form of {{U(s0)}{U(s1)}{U(s2)}...}
+         * we want utility in form of {U(s0), U(s1), U(s2), ...}
+         * which is why we get sytax error during policy improvement phase of PolicyEvaluation
+         * 
+         */
+
         return utility;
 
     }
@@ -1586,7 +1536,7 @@ public class MDP {
             printUtilitiesAndPolicy(utility, policy);
 
         }
-        else if (args[6].charAt(0) == 'p') {
+        else if (solutionTechnique == "p") {
 
             // Starting the timer for value iteration
             long startTime = System.nanoTime();
