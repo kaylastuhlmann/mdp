@@ -169,6 +169,8 @@ public class MDP {
 
         }
 
+
+
     /* POLICY ITERATION */
 
     // Backup for policy iteration
@@ -202,7 +204,7 @@ public class MDP {
         return randomState;
 
     }
-
+    /*
     // Iteration count for policy iteration
     public static int policyIteration() {
 
@@ -227,6 +229,76 @@ public class MDP {
 
         }
         return counter;
+    }
+*/
+    // policy iter should return policy, so a int[] where size = NUM_STATES
+    public static int[] policyIteration() {
+    //kayla attempt:
+        int interationCount = 0; // use to keep track of how many iterations it takes to get best Policy
+
+        boolean unchanged = True;
+        // Initialize a random Policy array
+        for(i = 0; i < NUM_STATES; i++){
+            int randomNum = (int)(Math.random(3)); // 0-3 represent the different actions
+            policy[i] = randomNum;
+        }
+
+        while(unchanged) { // stop when policy is no longer improving
+            iterationCount += 1;
+            /* Policy Evaluation */
+            utility = policyEval(policy, utility)  // maybe we dont need to pass these in since it is w/in the class?
+
+            /* Policy Improvement */
+            // the utility fxn implies a policy
+        }
+        return policy;
+    }
+
+    // given policy p, calculte the utility of each state if p were to be executed
+    public static double[] policyEval(int[] policy, double[] utility) {
+
+        /* make coefficient matrix */
+        double[NUM_STATES][NUM_STATES] coefficients;
+        // initialize coefficients
+        for (int i = 0; i < NUM_STATES; i++) {
+            for(int j = 0; j < NUM_STATES; j++) {
+                if(i == j) {  
+                    coefficients[i][j] = 1;  // if state row and column are the same, coefficient should init as 1
+                } else {                    //^^ bc of left hand side of bellman equation --> U(s)
+                    coefficients[i][j] = 0;  // otherwise, should init as 0
+                }
+            }
+        }
+        // use policy to change coefficients for each state's row
+        for (int i = 0; i < NUM_STATES; i++) {
+            int currentAction = policy[i];
+            double[] end_states = T[i][currentAction];  // possible end states when you take currentAction from state i
+            // for each possible end state
+            for(int j = 0; j < end_states.length; j++) {
+                // find the amount of change --> -(probability*discountFactor)
+                double changeAmount = -(discountFactor * (T[i][current_utility][j]));
+                // update coefficients array at that spot by the change amount
+                double oldCoeff = coefficients[i][j];
+                coefficients[i][j] = oldCoeff + changeAmount;
+            }
+        }
+        // init matrix
+        Matrix C = new Matrix(coefficients); 
+
+        /* make reward matrix */
+        double[NUM_STATES][1] reward2D; // make existing 1-D reward array into 2-D array, with NUM-STATES rows
+        for (int i < 0; i < NUM_STATES; i++) {
+            reward2D[i][0] = R[i];  // copy over values, each row should have a column containing one item
+        }
+        Matrix R = new Matrix(reward2D);
+
+        // solve for utility matrix if: [coeff. for each utility][utility]=[rewards]
+        Matrix U = C.solve(R);     
+        // assume utility vector is first element of array
+        utility = U.A[1];  
+        
+        return utility;
+
     }
 
     // Get the best action by calculating the action with the highest value 
