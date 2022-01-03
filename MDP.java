@@ -279,65 +279,6 @@ public class MDP {
     }
 
 
-    // Get the best action by calculating the action with the highest value 
-    // public static int PolicyfromUtilities(int s) {
-        
-    //     int maxAction = 0;
-
-    //     // Max action value (to compare to find the max action)
-    //     double maxActionValue = Double.NEGATIVE_INFINITY;
-
-    //     // Iterate through all the direction and find the max value
-    //     for (int a = 0; a < NUM_ACTIONS; ++a) {
-            
-    //         // Get the utility for that action 
-    //         double current_utility = calculatePolicy(s, a, discountFactor);
-
-    //         // Check to see if this is the max value
-    //         if (current_utility > maxActionValue) {
-
-    //             // Reset maxActionValue to be that value, and reset maxAction to be the action
-    //             maxActionValue = current_utility;
-    //             maxAction = a;
-    //         }
-
-    //     }
-    //     // Return the best action 
-    //     return maxAction; 
-    // }
-
-
-    // // Calculate the policy for that s and that action
-    // public static double calculatePolicy (int s, int action, double discountFactor) {
-
-    //     // Set a value for the utility value 
-    //     double val = 0;
-
-    //     // Iterate through the next states and get the utility
-    //     for (int j = 0; j < NUM_STATES ; ++j) {
-
-    //         // Get the expected probability
-    //         double prob = T[s][action][j];
-
-    //         // Implement the Bellman update formula for each state
-    //         val += (discountFactor * (prob * utility[j]));
-    //     }
-
-    //     // Implement the step cost when retrieving the rewards
-    //     val += R[s];
-        
-    //     // Return the utility value for the next state
-    //     return val;
-
-    //     }
-
-
-    // print out the current utilities and action choices for all states
-    // given the utility function and policy passed in.  the utility function
-    // is specified as an array of doubles representing utilities for the
-    // states, and the policy is specified as an array of integers representing
-    // optimal actions for the states
-    //
     // print out the current utilities and action choices for all states
     // given the utility function and policy passed in.  the utility function
     // is specified as an array of doubles representing utilities for the
@@ -1478,23 +1419,21 @@ public class MDP {
 
         } // initMDP
 
-    // Allow the user to specify the following parameters on the command line
     public static void main(String[] args) {
         
         // java MDP 0.99 1e-6 0.5 1 -1 -0.04 v
+        // Allow the user to specify the following parameters on the command line
         // Numerical input
         discountFactor = Double.parseDouble(args[0]);
-        //System.out.print(args);
-
         maxStateUtilityError = Double.parseDouble(args[1]);
         keyLossProbability = Double.parseDouble(args[2]);
         positiveTerminalReward = Double.parseDouble(args[3]);
         negativeTerminalReward = Double.parseDouble(args[4]);
         stepCost = Double.parseDouble(args[5]);
-
         // String input
         solutionTechnique = args[6];
         
+        // FOR TESTING
         /*
         discountFactor = 0.99;
         maxStateUtilityError = 1e-6;
@@ -1510,7 +1449,6 @@ public class MDP {
         initializeMDP(T, R);
 
         // Check which solution technique they use
-        //if (solutionTechnique == "v") {
         if (args[6].charAt(0) == 'v') {
 
             // Starting the timer for value iteration
@@ -1585,7 +1523,6 @@ public class MDP {
             printUtilitiesAndPolicy(utility, policy);
 
         }
-
         else {
 
             // Get the new solution technique
