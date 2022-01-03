@@ -231,18 +231,18 @@ public class MDP {
     }
 */
     // policy iter should return policy, so a int[] where size = NUM_STATES
-    public static int[] policyIteration() {
+    public static int policyIteration() {
     //kayla attempt:
         int interationCount = 0; // use to keep track of how many iterations it takes to get best Policy
 
-        boolean unchanged = True;
+        boolean improving = True; 
         // Initialize a random Policy array
         for(i = 0; i < NUM_STATES; i++){
             int randomNum = (int)(Math.random(3)); // 0-3 represent the different actions
             policy[i] = randomNum;
         }
 
-        while(unchanged) { // stop when policy is no longer improving
+        while(improving) { // stop when policy is no longer improving
             iterationCount += 1;
             /* Policy Evaluation */
             utility = policyEval(policy, utility)  // maybe we dont need to pass these in since it is w/in the class?
@@ -252,30 +252,31 @@ public class MDP {
             // the utility fxn implies a policy
             int[] newPolicy = [NUM_STATES];
             // for each state, calculate expected utility using Bellman equation and possible actions
-            // for (num_states)
-                // int oldAction = policy[state];
-                // int newAction;
-                // int highestUtility == 0;
-                // for each possible action a
-                    // get newUtility 
-                    // if (newUtility > highestUtility) {
-                        // newAction = a;
-                   // }
-                //}
-                // if (newAction =/= oldAction) {
-                    // 
-                //}
-
-                
-            // choose action that gives you most/choose greedily
+            for (int i = 0; i < NUM_STATES; i++) {
+                int oldAction = policy[i];
+                int newAction;
+                int highestUtility = 0;
+                for (int j = 0; j < 4; j++) { // for each possible action
+                    double newUtility = calculateUtilities(i, j, discountFactor);
+                    if (newUtility > highestUtility) {
+                        newAction = j;
+                    }
+                }
+                newPolicy[i] = newAction;
+            }
+            // if it stops improving, stop policy iteration
+            if (Arrays.equals(policy, newPolicy)) {
+                improving = False;
+            } 
+            policy = newPolicy;
         }
-        return policy;
+        return iterationCount;
     }
 
 
 
     // given policy p, calculte the utility of each state if p were to be executed
-    public static double[] policyEval(int[] policy, double[] utility) {
+    public static double[] policyEvaluation(int[] policy, double[] utility) {
 
         /* make coefficient matrix */
         double[NUM_STATES][NUM_STATES] coefficients;
@@ -1541,7 +1542,7 @@ public class MDP {
         stepCost = -0.04;
 
         // String input
-        solutionTechnique = "v";
+        solutionTechnique = "p";
 
         // Initalize the MDP
         initializeMDP(T, R);
@@ -1591,7 +1592,7 @@ public class MDP {
             long startTime = System.nanoTime();
 
             // Call the function that is running value iteration with its helper functions
-            // policyIteration();
+            int numIterations = policyIteration();
 
             // End the time after the iteration is finished
             long endTime = System.nanoTime();
@@ -1614,9 +1615,9 @@ public class MDP {
 
             System.out.println("Step cost: " + stepCost);
 
-            // System.out.println("The number of iterations in that run: " + String.valueOf(policyIteration()));
+            System.out.println("The number of iterations in that run: " + String.valueOf(numIterations));
 
-            System.out.println("The time taken to run this solution technique: " + (endTime - startTime) + " milliseconds");
+            System.out.println("The time taken to run this solution technique: " + ((endTime - startTime) / 100000) + " milliseconds");
 
             // Print out the utility and policy
             printUtilitiesAndPolicy(utility, policy);
