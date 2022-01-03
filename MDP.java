@@ -152,7 +152,7 @@ public class MDP {
         double val = 0;
 
         // Iterate through the next states and get the utility
-        for (int j = 0; j < NUM_STATES ; ++j) {
+        for (int j = 0; j < NUM_STATES ; j++) {
 
             // Get the expected probability
             double prob = T[s][action][j];
@@ -248,11 +248,32 @@ public class MDP {
             /* Policy Evaluation */
             utility = policyEval(policy, utility)  // maybe we dont need to pass these in since it is w/in the class?
 
+            
             /* Policy Improvement */
             // the utility fxn implies a policy
+            int[] newPolicy = [NUM_STATES];
+            // for each state, calculate expected utility using Bellman equation and possible actions
+            // for (num_states)
+                // int oldAction = policy[state];
+                // int newAction;
+                // int highestUtility == 0;
+                // for each possible action a
+                    // get newUtility 
+                    // if (newUtility > highestUtility) {
+                        // newAction = a;
+                   // }
+                //}
+                // if (newAction =/= oldAction) {
+                    // 
+                //}
+
+                
+            // choose action that gives you most/choose greedily
         }
         return policy;
     }
+
+
 
     // given policy p, calculte the utility of each state if p were to be executed
     public static double[] policyEval(int[] policy, double[] utility) {
