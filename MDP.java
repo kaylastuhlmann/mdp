@@ -167,7 +167,11 @@ public class MDP {
 
         }
 
-
+/*
+    public static double utilityOfAction() {
+        // given action, calculate utility of that action
+    }
+*/
 
     /* POLICY ITERATION */
 
@@ -194,15 +198,16 @@ public class MDP {
             int[] newPolicy = new int[NUM_STATES];
             // for each state, calculate expected utility using Bellman equation and possible actions
             for (int i = 0; i < NUM_STATES; i++) {
-                int oldAction = policy[i];
-                int newAction = oldAction;
-                int highestUtility = 0;
-                for (int j = 0; j < 4; j++) { // for each possible action
-                    double newUtility = calculateUtility(i, j, discountFactor);
-                    if (newUtility > highestUtility) {
-                        newAction = j;
-                    }
-                }
+                //int oldAction = policy[i];
+                int newAction = ActionfromUtilities(i);
+                
+                //int highestUtility = -999999999;
+                //for (int j = 0; j < 4; j++) { // for each possible action
+                //    double newUtility = calculateUtility(i, j, discountFactor);
+                //    if (newUtility > highestUtility) {
+                //        newAction = j;
+                //    }
+                //}
                 newPolicy[i] = newAction;
             }
             // if it stops improving, stop policy iteration
@@ -211,6 +216,7 @@ public class MDP {
             } 
             policy = newPolicy;
         }
+        
         return iterationCount;
     }
 
@@ -258,15 +264,15 @@ public class MDP {
         Matrix U = C.solve(R);     
         // assume utility vector is first element of array
         
-        utility = U.getArray()[1];  
-        /*
-         * QUESTION FOR PROFESSOR MAJERCIK
-         * 
-         * U is in form of {{U(s0)}{U(s1)}{U(s2)}...}
-         * we want utility in form of {U(s0), U(s1), U(s2), ...}
-         * which is why we get sytax error during policy improvement phase of PolicyEvaluation
-         * 
-         */
+
+        
+        double[] newUtility = new double[NUM_STATES];
+        double[][] values = U.getArray();
+        for(int i = 0; i < NUM_STATES; i++) {
+            double utilityValue = values[i][0];
+            newUtility[i] = utilityValue;
+        }
+        utility = newUtility;
 
         return utility;
 
@@ -1477,13 +1483,17 @@ public class MDP {
         
         // java MDP 0.99 1e-6 0.5 1 -1 -0.04 v
         // Numerical input
-        // discountFactor = Double.parseDouble(args[0]);
-        // maxStateUtilityError = Double.parseDouble(args[1]);
-        // keyLossProbability = Double.parseDouble(args[2]);
-        // positiveTerminalReward = Double.parseDouble(args[3]);
-        // negativeTerminalReward = Double.parseDouble(args[4]);
-        // stepCost = Double.parseDouble(args[5]);
+        discountFactor = Double.parseDouble(args[0]);
+        maxStateUtilityError = Double.parseDouble(args[1]);
+        keyLossProbability = Double.parseDouble(args[2]);
+        positiveTerminalReward = Double.parseDouble(args[3]);
+        negativeTerminalReward = Double.parseDouble(args[4]);
+        stepCost = Double.parseDouble(args[5]);
 
+        // String input
+        solutionTechnique = args[6];
+        
+        /*
         discountFactor = 0.99;
         maxStateUtilityError = 1e-6;
         keyLossProbability = 0.5;
@@ -1491,8 +1501,8 @@ public class MDP {
         negativeTerminalReward = -1;
         stepCost = -0.04;
 
-        // String input
         solutionTechnique = "p";
+        */
 
         // Initalize the MDP
         initializeMDP(T, R);
