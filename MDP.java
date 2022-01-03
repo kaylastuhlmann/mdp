@@ -1,4 +1,3 @@
-
 /*
 
   Framework for MDP Solver
@@ -75,9 +74,13 @@ public class MDP {
             // Iterate through all the actions (1-4) and pick the action that has the highest utility
             int action = ActionfromUtilities(s);
 
+            // Update the policy 
+            policy[s] = action;
+
             // With the best action, calculate the utility
             double getUtility = calculateUtility(s, action, discountFactor);
 
+            // Conditional
             if (Math.abs(utility[s] - getUtility) > delta) {
 
                 // Reset delta
@@ -96,21 +99,15 @@ public class MDP {
     // Iteration count for value iteraiton
     public static int valueIteration() {
 
-        System.out.println("entering value interation function");
-
         int counter = 0;
 
         // Use this help with the iteration
         double delta = Double.POSITIVE_INFINITY;
 
-        System.out.println("before while loop");
-
         // Iteration loop (keeping track of the number of iterations)
         while (delta > Math.abs(maxStateUtilityError * (1 - discountFactor) / discountFactor)) {
 
-            System.out.println(delta + "this is before delta update");
             delta = vbackup();
-            System.out.println(delta + "this is after delta update");
             counter++;
 
         }
@@ -152,6 +149,7 @@ public class MDP {
         double val = 0;
 
         // Iterate through the next states and get the utility
+
         for (int j = 0; j < NUM_STATES ; j++) {
 
             // Get the expected probability
@@ -174,58 +172,59 @@ public class MDP {
     /* POLICY ITERATION */
 
     // Backup for policy iteration
-    public static double pbackup () {
+    // public static int pbackup () {
 
-        // Start off with a random policy 
-        int randomState = randomNumber.nextInt(NUM_STATES) + 1;
+    //     // Start off with a random policy 
+    //     Random rand = new Random();
+    //     int randomState = rand.nextInt(NUM_STATES) + 1;
 
-        // // Calculate utility
-        // double utility = PolicyfromUtilities(randomState);
+    //     // For all the states in the grid 
+    //     for (int s = 0; s < NUM_STATES ; ++s) {
 
-        // For all the states in the grid 
-        for (int s = 0; s < NUM_STATES ; ++s) {
+    //         // Iterate through and calculate the optimal policy
+    //         int currPolicy = PolicyfromUtilities(s);
 
-            // Iterate through and calculate the optimal policy
-            int currPolicy = ActionfromUtilities(s);
+    //         // With the best action, calculate the utility
+    //         int getPolicy = (int) calculatePolicy(s, currPolicy, discountFactor);
 
-            // With the best action, calculate the utility
-            int getPolicy = calculatePolicy(s, currPolicy, discountFactor);
+    //         if (getPolicy != policy[s]) {
 
-            if (getPolicy != policy[s]) {
+    //             // Reset delta
+    //             randomState = rand.nextInt(NUM_STATES + 1);
+    //         }
 
-                // Reset delta
-                randomState = randomNumber.nextInt(NUM_STATES) + 1;
-            }
-
-            // Update our utilities
-            utility[s] = getPolicy;
+    //         // Update our utilities
+    //         utility[s] = getPolicy;
         
-        }
-        return randomState;
+    //     }
+    //     return randomState;
+
 
     }
     /*
+
     // Iteration count for policy iteration
-    public static int policyIteration() {
+    // public static int policyIteration() {
 
-        // Counter
-        int counter = 0;
+    //     // Counter
+    //     int counter = 0;
 
-        // Start off with a random policy
-        int random = (int)(Math.random() * 5) + 0;
+    //     // Start off with a random policy 
+    //     Random rand = new Random();
+    //     int randomState = rand.nextInt(NUM_STATES) + 1;
 
-        // Utilize the previous method defined above to get the best policy from utilities
-        // Policy implies a utility function (slide 6)
-        int bestAction = PolicyfromUtilities(s);
+    //     // Utilize the previous method defined above to get the best policy from utilities
+    //     // Policy implies a utility function (slide 6)
+    //     int bestAction = PolicyfromUtilities(randomState );
 
-        // With the best action, calculate the policy
-        double getPolicy = calculatePolicy(s, bestAction);
+    //     // With the best action, calculate the policy
+    //     int getPolicy = calculatePolicy(randomState, bestAction);
 
-        // Iteration loop (keeping track of the number of iterations)
-        while (policy[s] != getPolicy) {
+    //     // Iteration loop (keeping track of the number of iterations)
+    //     while (policy[randomState] != getPolicy) {
 
-            random = pbackup();
-            counter++;
+    //         randomState = pbackup();
+    //         counter++;
 
         }
         return counter;
@@ -322,57 +321,58 @@ public class MDP {
 
     }
 
+
     // Get the best action by calculating the action with the highest value 
-    public static int PolicyfromUtilities(int s) {
+    // public static int PolicyfromUtilities(int s) {
         
-        int maxAction = 0;
+    //     int maxAction = 0;
 
-        // Max action value (to compare to find the max action)
-        double maxActionValue = Double.NEGATIVE_INFINITY;
+    //     // Max action value (to compare to find the max action)
+    //     double maxActionValue = Double.NEGATIVE_INFINITY;
 
-        // Iterate through all the direction and find the max value
-        for (int a = 0; a < NUM_ACTIONS; ++a) {
+    //     // Iterate through all the direction and find the max value
+    //     for (int a = 0; a < NUM_ACTIONS; ++a) {
             
-            // Get the utility for that action 
-            double current_utility = calculatePolicy(s, a, discountFactor);
+    //         // Get the utility for that action 
+    //         double current_utility = calculatePolicy(s, a, discountFactor);
 
-            // Check to see if this is the max value
-            if (current_utility > maxActionValue) {
+    //         // Check to see if this is the max value
+    //         if (current_utility > maxActionValue) {
 
-                // Reset maxActionValue to be that value, and reset maxAction to be the action
-                maxActionValue = current_utility;
-                maxAction = a;
-            }
+    //             // Reset maxActionValue to be that value, and reset maxAction to be the action
+    //             maxActionValue = current_utility;
+    //             maxAction = a;
+    //         }
 
-        }
-        // Return the best action 
-        return maxAction; 
-    }
+    //     }
+    //     // Return the best action 
+    //     return maxAction; 
+    // }
 
 
-    // Calculate the policy for that s and that action
-    public static double calculatePolicy (int s, int action, double discountFactor) {
+    // // Calculate the policy for that s and that action
+    // public static double calculatePolicy (int s, int action, double discountFactor) {
 
-        // Set a value for the utility value 
-        double val = 0;
+    //     // Set a value for the utility value 
+    //     double val = 0;
 
-        // Iterate through the next states and get the utility
-        for (int j = 0; j < NUM_STATES ; ++j) {
+    //     // Iterate through the next states and get the utility
+    //     for (int j = 0; j < NUM_STATES ; ++j) {
 
-            // Get the expected probability
-            double prob = T[s][action][j];
+    //         // Get the expected probability
+    //         double prob = T[s][action][j];
 
-            // Implement the Bellman update formula for each state
-            val += (discountFactor * (prob * utility[j]));
-        }
+    //         // Implement the Bellman update formula for each state
+    //         val += (discountFactor * (prob * utility[j]));
+    //     }
 
-        // Implement the step cost when retrieving the rewards
-        val += R[s];
+    //     // Implement the step cost when retrieving the rewards
+    //     val += R[s];
         
-        // Return the utility value for the next state
-        return val;
+    //     // Return the utility value for the next state
+    //     return val;
 
-        }
+    //     }
 
 
     // print out the current utilities and action choices for all states
@@ -1524,29 +1524,37 @@ public class MDP {
     // Allow the user to specify the following parameters on the command line
     public static void main(String[] args) {
         
+        // java MDP 0.99 1e-6 0.5 1 -1 -0.04 v
         // Numerical input
-        discountFactor = Double.parseDouble(args[0]);
-        maxStateUtilityError = Double.parseDouble(args[1]);
-        keyLossProbability = Double.parseDouble(args[2]);
-        positiveTerminalReward = Double.parseDouble(args[3]);
-        negativeTerminalReward = Double.parseDouble(args[4]);
-        stepCost = Double.parseDouble(args[5]);
+        // discountFactor = Double.parseDouble(args[0]);
+        // maxStateUtilityError = Double.parseDouble(args[1]);
+        // keyLossProbability = Double.parseDouble(args[2]);
+        // positiveTerminalReward = Double.parseDouble(args[3]);
+        // negativeTerminalReward = Double.parseDouble(args[4]);
+        // stepCost = Double.parseDouble(args[5]);
+
+        discountFactor = 0.99;
+        maxStateUtilityError = 1e-6;
+        keyLossProbability = 0.5;
+        positiveTerminalReward = 1;
+        negativeTerminalReward = -1;
+        stepCost = -0.04;
 
         // String input
-        solutionTechnique = String.parseString(args[6]);
+        solutionTechnique = "v";
 
         // Initalize the MDP
         initializeMDP(T, R);
 
         // Check which solution technique they use
-        if (solutionTechnique.equalsIgnoreCase("v")) {
+        if (solutionTechnique == "v") {
+        // if (args[6].charAt(0) == 'v') {
 
             // Starting the timer for value iteration
             long startTime = System.nanoTime();
 
             // Call the function that is running value iteration with its helper functions
-            System.out.println("before interation");
-            valueIteration();
+            int iterations = valueIteration();
 
             // End the time after the iteration is finished
             long endTime = System.nanoTime();
@@ -1569,27 +1577,27 @@ public class MDP {
 
             System.out.println("Step cost: " + stepCost);
 
-            System.out.println("The number of iterations in that run: " + String.valueOf(valueIteration()));
+            System.out.println("The number of iterations in that run: " + String.valueOf(iterations));
 
-            System.out.println("The time taken to run this solution technique: " + (endTime - startTime) + " milliseconds");
+            System.out.println("The time taken to run this solution technique: " + ((endTime - startTime) / 100000) + " milliseconds");
 
             // Print out the utility and policy
             printUtilitiesAndPolicy(utility, policy);
 
         }
-        else if (solutionTechnique == "p") {
+        else if (args[6].charAt(0) == 'p') {
 
             // Starting the timer for value iteration
             long startTime = System.nanoTime();
 
             // Call the function that is running value iteration with its helper functions
-            policyIteration();
+            // policyIteration();
 
             // End the time after the iteration is finished
             long endTime = System.nanoTime();
 
             // Change the variable to use for output
-            solutionTechnique = "Policy Iteration";
+            // solutionTechnique = "Policy Iteration";
     
             // Print out the following lines
             System.out.println("Solution Technique: " + solutionTechnique);
@@ -1606,9 +1614,7 @@ public class MDP {
 
             System.out.println("Step cost: " + stepCost);
 
-            int counter = iteration();
-
-            System.out.println("The number of iterations in that run: " + String.valueOf(policyIteration()));
+            // System.out.println("The number of iterations in that run: " + String.valueOf(policyIteration()));
 
             System.out.println("The time taken to run this solution technique: " + (endTime - startTime) + " milliseconds");
 
