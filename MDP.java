@@ -1484,6 +1484,8 @@ public class MDP {
         // java MDP 0.99 1e-6 0.5 1 -1 -0.04 v
         // Numerical input
         discountFactor = Double.parseDouble(args[0]);
+        //System.out.print(args);
+
         maxStateUtilityError = Double.parseDouble(args[1]);
         keyLossProbability = Double.parseDouble(args[2]);
         positiveTerminalReward = Double.parseDouble(args[3]);
@@ -1508,17 +1510,17 @@ public class MDP {
         initializeMDP(T, R);
 
         // Check which solution technique they use
-        if (solutionTechnique == "v") {
-        // if (args[6].charAt(0) == 'v') {
+        //if (solutionTechnique == "v") {
+        if (args[6].charAt(0) == 'v') {
 
             // Starting the timer for value iteration
-            long startTime = System.nanoTime();
+            long startTime = System.currentTimeMillis();
 
             // Call the function that is running value iteration with its helper functions
             int iterations = valueIteration();
 
             // End the time after the iteration is finished
-            long endTime = System.nanoTime();
+            long endTime = System.currentTimeMillis();
 
             // Change the variable to use for output
             solutionTechnique = "Value Iteration";
@@ -1540,22 +1542,22 @@ public class MDP {
 
             System.out.println("The number of iterations in that run: " + String.valueOf(iterations));
 
-            System.out.println("The time taken to run this solution technique: " + ((endTime - startTime) / 100000) + " milliseconds");
+            System.out.println("The time taken to run this solution technique: " + (endTime - startTime) + " milliseconds");
 
             // Print out the utility and policy
             printUtilitiesAndPolicy(utility, policy);
 
         }
-        else if (solutionTechnique == "p") {
+        else if (args[6].charAt(0) == 'p') {
 
             // Starting the timer for value iteration
-            long startTime = System.nanoTime();
+            long startTime = System.currentTimeMillis();
 
             // Call the function that is running value iteration with its helper functions
             int numIterations = policyIteration();
 
             // End the time after the iteration is finished
-            long endTime = System.nanoTime();
+            long endTime = System.currentTimeMillis();
 
             // Change the variable to use for output
             // solutionTechnique = "Policy Iteration";
@@ -1577,7 +1579,7 @@ public class MDP {
 
             System.out.println("The number of iterations in that run: " + String.valueOf(numIterations));
 
-            System.out.println("The time taken to run this solution technique: " + ((endTime - startTime) / 100000) + " milliseconds");
+            System.out.println("The time taken to run this solution technique: " + (endTime - startTime) + " milliseconds");
 
             // Print out the utility and policy
             printUtilitiesAndPolicy(utility, policy);
